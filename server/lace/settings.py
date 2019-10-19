@@ -15,23 +15,23 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'iv9js_ign(z80i4f+t3bih3xj&8(a49ic$223f9l)2%w($@hts'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', True) == True
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: keep the secret key used in production secret!
+if DEBUG:
+    SECRET_KEY = 'iv9js_ign(z80i4f+t3bih3xj&8(a49ic$223f9l)2%w($@hts'
+else:
+    SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+
+ALLOWED_HOSTS = ['*']
 
 SITE_ID = 1
 
-
-# Application definition
-
+# Application definitio
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
