@@ -75,6 +75,9 @@ class ViewsTestSuite(TestCase):
     def test_edit_template(self):
         pass
 
+    def test_edit_template_without_ownership(self):
+        pass
+
     def test_edit_template_without_auth(self):
         pass
 
