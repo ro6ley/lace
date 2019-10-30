@@ -87,6 +87,8 @@ class ViewsTestSuite(TestCase):
     def test_delete_template_without_auth(self):
         pass
 
+    # test public and private templates, updating and viewing
+
 
 class UserManagementTestSuite(TestCase):
     """ Test suite for user management
