@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', True) == True
+DEBUG = os.environ.get('DJANGO_DEBUG', True)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if DEBUG:
@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ['*']
 
 SITE_ID = 1
 
-# Application definitio
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,12 +48,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.facebook',
-    # 'allauth.socialaccount.providers.github',
-    # 'allauth.socialaccount.providers.google',
-    # 'allauth.socialaccount.providers.linkedin',
-    # 'allauth.socialaccount.providers.microsoft',
-    # 'allauth.socialaccount.providers.twitter',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
