@@ -13,28 +13,18 @@ class TemplateCreateView(generics.ListCreateAPIView):
     """
     serializer_class = TemplateSerializer
     queryset = Template.objects.all()
+    permission_classes = (permissions.IsAuthenticated, IsOwner)
 
     def perform_create(self, serializer):
+        """ Save the owner data when creating a new template
         """
-        Save the POST data when creating a new template
-        """
-        # TODO: automatically create slug in case it is not provided
         serializer.save(owner=self.request.user)
-
-    def get_queryset(self):
-        """
-        Optionally restricts the returned purchases to a given user,
-        by filtering against a `username` query parameter in the URL.
-        """
-        queryset = Template.objects.all()
-        username = self.request.user
-        if username is None:
-            queryset = queryset.filter(is_private=False)
-        return queryset        
 
 
 class TemplateDetailsView(generics.RetrieveUpdateDestroyAPIView):
     """ View to handle the viewing and updating of individual templates.
+
+    Public templates can be viewed by unauthenticated users.
     """
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwner)
     serializer_class = TemplateSerializer
@@ -46,11 +36,9 @@ class TemplateDetailsView(generics.RetrieveUpdateDestroyAPIView):
         try:
             template = Template.objects.get(pk=self.kwargs['pk'])
 
-            username = None
             user = None
             if self.request.user.is_authenticated:
-                username = self.request.user.username
-                user = User.objects.get(username=username)
+                user = User.objects.get(username=self.request.user.username)
             
             if template.is_private and template.owner == user:
                 return template
