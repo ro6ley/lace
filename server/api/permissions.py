@@ -10,6 +10,4 @@ class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         """ Return True id permission is granted to the template owner
         """
-        if isinstance(obj, Template):
-            return obj.owner == request.user
         return obj.owner == request.user
