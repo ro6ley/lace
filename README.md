@@ -1,6 +1,6 @@
-# lace
+# Lace
 
-Lace is a snippet manager to help you manage any form of snippets on the browser and VS Code IDE(Coming soon). Such snippets include PR/Issue templates, code snippets, etc.
+Lace is a snippet manager to help you manage any form of snippets on the browser(WIP) and VS Code IDE(Coming soon). Such snippets include PR/Issue templates, code snippets, etc.
 
 # Stack
 
