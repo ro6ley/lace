@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Template(models.Model):
+class Snippet(models.Model):
     title = models.CharField(max_length=255, blank=False, null=False)
     content = models.TextField(blank=False, null=False)
     owner = models.ForeignKey('auth.user', related_name="templates",

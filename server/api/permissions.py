@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from .models import Template
+# from .models import Template
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
