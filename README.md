@@ -4,7 +4,7 @@ Lace is a snippet manager to help you manage any form of snippets on the browser
 
 # Stack
 
-- [x] Backend - Python/Django 2.2
+- [x] Backend - Python/Django 3.0
 - [ ] Frontend - Vue.js + Vuex with TypeScript
 - [ ] Chrome Extension - Vuejs
 
