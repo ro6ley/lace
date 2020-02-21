@@ -5,3 +5,5 @@ omit =
     */distutils/*
     */tests/*
     */migrations/*
+    **/manage.py
+    **/settings.py
