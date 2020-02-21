@@ -40,9 +40,6 @@ class ModelTestSuite(TestCase):
 
         self.assertEqual(template.title, "Updated Test Template")
 
-    def test_can_delete_template(self):
-        pass
-
 
 class ViewsTestSuite(TestCase):
     """ Test suite for the API views.
@@ -65,94 +62,143 @@ class ViewsTestSuite(TestCase):
     def test_create_template(self):
         """ Test template creation via the API.
         """
-        response = self.client.post(reverse('templates'), self.template_data,
+        response = self.client.post(reverse('templates-list'), self.template_data,
                                             format='json')
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_view_template(self):
-        response = self.client.post(reverse('templates'), self.private_template_data,
-                                    format='json')        
+    def test_view_own_template(self):
+        response = self.client.post(reverse('templates-list'), self.template_data,
+                                    format='json')
 
-        view_response = self.client.get(reverse('template_detail', kwargs={'pk': response.data['id']}),
+        view_response = self.client.get(reverse('templates-list'), kwargs={'pk': response.data['id']},
                                             format='json')
 
         self.assertEqual(view_response.status_code, 200)
 
-    def test_view_templates_list(self):
-        response = self.client.post(reverse('templates'), self.private_template_data,
-                                    format='json')        
+    def test_view_private_template_without_ownership(self):
+        response = self.client.post(reverse('templates-list'), self.private_template_data,
+                                    format='json') 
 
-        view_response = self.client.get(reverse('templates'), format='json')
+        client = APIClient()
+        user = User.objects.create(username="RandomUser", password="password")
+        client.force_authenticate(user=user)       
+
+        view_response = client.get(reverse('templates-list'), kwargs={'pk': response.data['id']},
+                                            format='json')
+
+        self.assertEqual(view_response.status_code, 403)
+
+    def test_view_private_template_without_auth(self):
+        response = self.client.post(reverse('templates-list'), self.private_template_data,
+                                    format='json')        
+        client = APIClient()
+        view_response = client.get(reverse('templates-list'), kwargs={'pk': response.data['id']},
+                                            format='json')
 
         self.assertEqual(view_response.status_code, 200)        
 
+    def test_view_templates_list(self):
+        response = self.client.post(reverse('templates-list'), self.private_template_data,
+                                    format='json')        
+
+        view_response = self.client.get(reverse('templates-list'), format='json')
+
+        self.assertEqual(view_response.status_code, status.HTTP_200_OK)
+
     def test_create_template_without_auth(self):
         client = APIClient()
-        response = client.post(reverse('templates'), self.template_data,
+        response = client.post(reverse('templates-list'), self.template_data,
                                format='json')
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_edit_template(self):
-        response = self.client.post(reverse('templates'), self.template_data,
+    def test_edit_own_template(self):
+        response = self.client.post(reverse('templates-list'), self.template_data,
                                     format='json')
-        updated_response = self.client.patch(reverse('template_detail', kwargs={'pk': response.data['id']}),
+        updated_response = self.client.patch(reverse('templates-detail', kwargs={'pk': response.data['id']}),
                                            {'title': 'New title', 'is_private': True},
                                            format='json')
 
         self.assertEqual(updated_response.data['title'], 'New title')
         self.assertTrue(updated_response.data['is_private'])
 
-    def test_edit_template_without_ownership(self):
-        response = self.client.post(reverse('templates'), self.template_data,
+    def test_edit_public_template_without_ownership(self):
+        response = self.client.post(reverse('templates-list'), self.template_data,
                                     format='json')        
         
         client = APIClient()
         user = User.objects.create(username="RandomUser", password="password")
         client.force_authenticate(user=user)
 
-        edit_response = client.patch(reverse('template_detail', kwargs={'pk': response.data['id']}),
-                                             {'title': 'New title', 'is_private': True},
-                                             format='json')
+        edit_response = client.patch(reverse('templates-detail', kwargs={'pk': response.data['id']}),
+                                    {'title': 'New title', 'is_private': True},
+                                    format='json')
 
         self.assertEqual(edit_response.status_code, 403)
 
-    def test_view_template_without_ownership(self):
-        response = self.client.post(reverse('templates'), self.private_template_data,
+    def test_edit_private_template_without_ownership(self):
+        response = self.client.post(reverse('templates-list'), self.private_template_data,
                                     format='json')        
         
         client = APIClient()
         user = User.objects.create(username="RandomUser", password="password")
         client.force_authenticate(user=user)
 
-        view_response = client.get(reverse('template_detail', kwargs={'pk': response.data['id']}),
-                                            format='json')
+        edit_response = client.patch(reverse('templates-detail', kwargs={'pk': response.data['id']}),
+                                    {'title': 'New title', 'is_private': True},
+                                    format='json')
 
-        self.assertEqual(view_response.status_code, 403)
+        self.assertEqual(edit_response.status_code, 404)
 
-    def test_edit_template_without_auth(self):
-        response = self.client.post(reverse('templates'), self.template_data,
+    def test_view_public_template_without_ownership(self):
+        response = self.client.post(reverse('templates-list'), self.template_data,
+                                    format='json')
+        
+        client = APIClient()
+        user = User.objects.create(username="RandomUser", password="password")
+        client.force_authenticate(user=user)
+
+        view_response = client.get(reverse('templates-detail', kwargs={'pk': response.data['id']}),
+                                   format='json')
+
+        self.assertEqual(view_response.status_code, 200)
+
+    def test_view_private_template_without_ownership(self):
+        response = self.client.post(reverse('templates-list'), self.private_template_data,
+                                    format='json')
+        
+        client = APIClient()
+        user = User.objects.create(username="RandomUser", password="password")
+        client.force_authenticate(user=user)
+
+        view_response = client.get(reverse('templates-detail', kwargs={'pk': response.data['id']}),
+                                   format='json')
+
+        self.assertEqual(view_response.status_code, 404)        
+
+    def test_edit_public_template_without_auth(self):
+        response = self.client.post(reverse('templates-list'), self.template_data,
                                     format='json')
         client = APIClient()
-        edit_response = client.patch(reverse('template_detail', kwargs={'pk': response.data['id']}),
-                                           {'title': 'New title', 'is_private': True},
-                                           format='json')
+        edit_response = client.patch(reverse('templates-detail', kwargs={'pk': response.data['id']}),
+                                    {'title': 'New title', 'is_private': True},
+                                    format='json')
         self.assertEqual(edit_response.status_code, 401)
 
-    def test_delete_template(self):
-        response = self.client.post(reverse('templates'), self.template_data,
+    def test_delete_public_template(self):
+        response = self.client.post(reverse('templates-list'), self.template_data,
                                     format='json')
-        delete_response = self.client.delete(reverse('template_detail', kwargs={'pk': response.data['id']}),
+        delete_response = self.client.delete(reverse('templates-detail', kwargs={'pk': response.data['id']}),
                                              format='json')
 
         self.assertEqual(delete_response.status_code, 204)
 
-    def test_delete_template_without_auth(self):
-        response = self.client.post(reverse('templates'), self.template_data,
+    def test_delete_public_template_without_auth(self):
+        response = self.client.post(reverse('templates-list'), self.template_data,
                                     format='json')
         client = APIClient()
-        delete_response = client.delete(reverse('template_detail', kwargs={'pk': response.data['id']}),
+        delete_response = client.delete(reverse('templates-list'), kwargs={'pk': response.data['id']},
                                         format='json')
 
         self.assertEqual(delete_response.status_code, 401)
